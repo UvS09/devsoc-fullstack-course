@@ -40,6 +40,50 @@ router.get('/get/:id', async (req, res) => {
   }
 });
 
+//FILTER POSTS CREATED AFTER A DATE
+router.get('/after/:date', async (req, res) => {
+  try {
+    const posts = await Post.find({
+      createdAt: { $gt: new Date(req.params.date) }
+    });
+    res.json({ success: true, data: posts });
+  } catch (err) {
+    res.status(400).json({ success: false, error: err.message });
+  }
+});
+
+//SEARCH PART OF A BODY/TITLE
+router.get('/search/:keyword', async (req, res) => {
+  try {
+    const posts = await Post.find({
+      title: { $regex: req.params.keyword, $options: 'i' }
+    });
+    res.json({ success: true, data: posts });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+//SORTING POSTS BY NEWEST FIRST
+router.get('/sort/newest', async (req, res) => {
+  try {
+    const posts = await Post.find().sort({ createdAt: -1 });
+    res.json({ success: true, data: posts });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+//SORTING ALPHABETICALLY BY TITLE
+router.get('/sort/title', async (req, res) => {
+  try {
+    const posts = await Post.find().sort({ title: 1 });
+    res.json({ success: true, data: posts });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 //UPDATE
 router.put('/update/:id', async (req, res) => {
   try {
